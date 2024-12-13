@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c6afa395be1fab932866689dd5169ac5 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_c6afa395be1fab932866689dd5169ac5" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_c6afa395be1fab932866689dd5169ac5 = L.map(
+                "map_c6afa395be1fab932866689dd5169ac5",
+                {
+                    center: [59.5, 5.5],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 7,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_e7a9c0e87365e7cf9e3efe5475b14fa0 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+            var circle_227415f0e078b073f0ac127c2f09549a = L.circle(
+                [5.6378, 58.8766],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 60000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_264f6e5b09e23f24632aa2d452431b2a = L.popup({"maxWidth": "100%"});
+
+        
+            var html_2820ceb3874b51846787556b18cd6632 = $(`<div id="html_2820ceb3874b51846787556b18cd6632" style="width: 100.0%; height: 100.0%;">Stavanger Airport - Primary Catchment</div>`)[0];
+            popup_264f6e5b09e23f24632aa2d452431b2a.setContent(html_2820ceb3874b51846787556b18cd6632);
+        
+
+        circle_227415f0e078b073f0ac127c2f09549a.bindPopup(popup_264f6e5b09e23f24632aa2d452431b2a)
+        ;
+
+        
+    
+    
+            var circle_6bf1436d4c7b5d0bc89c79f4cfd811cb = L.circle(
+                [5.6378, 58.8766],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 90000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_e93e7428856e7dfd07a3f0d837790735 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_6c1eda447e053b8fb180fba71f7be0bc = $(`<div id="html_6c1eda447e053b8fb180fba71f7be0bc" style="width: 100.0%; height: 100.0%;">Stavanger Airport - Secondary Catchment</div>`)[0];
+            popup_e93e7428856e7dfd07a3f0d837790735.setContent(html_6c1eda447e053b8fb180fba71f7be0bc);
+        
+
+        circle_6bf1436d4c7b5d0bc89c79f4cfd811cb.bindPopup(popup_e93e7428856e7dfd07a3f0d837790735)
+        ;
+
+        
+    
+    
+            var circle_9896394a08026827d24d14d2e398749b = L.circle(
+                [5.2084, 59.345],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 60000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_8e43957bd68d4a60a7577fb806551314 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_be5aecb52c5d6536e6af1c4862dcacd3 = $(`<div id="html_be5aecb52c5d6536e6af1c4862dcacd3" style="width: 100.0%; height: 100.0%;">Haugesund Airport - Primary Catchment</div>`)[0];
+            popup_8e43957bd68d4a60a7577fb806551314.setContent(html_be5aecb52c5d6536e6af1c4862dcacd3);
+        
+
+        circle_9896394a08026827d24d14d2e398749b.bindPopup(popup_8e43957bd68d4a60a7577fb806551314)
+        ;
+
+        
+    
+    
+            var circle_7f840b0b3da2a01572e5fe925247801f = L.circle(
+                [5.2084, 59.345],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 90000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_aa0d4fe189eef35ebfdb2cc7c484e18c = L.popup({"maxWidth": "100%"});
+
+        
+            var html_70ae4d26b5c39c2fb4cfa55c058860ee = $(`<div id="html_70ae4d26b5c39c2fb4cfa55c058860ee" style="width: 100.0%; height: 100.0%;">Haugesund Airport - Secondary Catchment</div>`)[0];
+            popup_aa0d4fe189eef35ebfdb2cc7c484e18c.setContent(html_70ae4d26b5c39c2fb4cfa55c058860ee);
+        
+
+        circle_7f840b0b3da2a01572e5fe925247801f.bindPopup(popup_aa0d4fe189eef35ebfdb2cc7c484e18c)
+        ;
+
+        
+    
+    
+            var circle_75757317954fba60f77f1df8976766ee = L.circle(
+                [5.3409, 59.7919],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 60000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_5f41c754f8516765b91a638f2e409cfd = L.popup({"maxWidth": "100%"});
+
+        
+            var html_300392d8496c883fd4185987991bd9d2 = $(`<div id="html_300392d8496c883fd4185987991bd9d2" style="width: 100.0%; height: 100.0%;">Stord Airport - Primary Catchment</div>`)[0];
+            popup_5f41c754f8516765b91a638f2e409cfd.setContent(html_300392d8496c883fd4185987991bd9d2);
+        
+
+        circle_75757317954fba60f77f1df8976766ee.bindPopup(popup_5f41c754f8516765b91a638f2e409cfd)
+        ;
+
+        
+    
+    
+            var circle_27cf5fc4b165eb41f183c16ab61ed80e = L.circle(
+                [5.3409, 59.7919],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 90000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_ad66afc144f78165958a226a15a0b6bc = L.popup({"maxWidth": "100%"});
+
+        
+            var html_84c2511766d9ce516455228dcd0470bd = $(`<div id="html_84c2511766d9ce516455228dcd0470bd" style="width: 100.0%; height: 100.0%;">Stord Airport - Secondary Catchment</div>`)[0];
+            popup_ad66afc144f78165958a226a15a0b6bc.setContent(html_84c2511766d9ce516455228dcd0470bd);
+        
+
+        circle_27cf5fc4b165eb41f183c16ab61ed80e.bindPopup(popup_ad66afc144f78165958a226a15a0b6bc)
+        ;
+
+        
+    
+    
+            var circle_9a251c139872f92fc97ce2de88477198 = L.circle(
+                [5.2181, 60.2936],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 60000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_44ae2129e6e6569424a9321e4d172786 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_77fe9f60a5a92769cd6a3785bfaacc7c = $(`<div id="html_77fe9f60a5a92769cd6a3785bfaacc7c" style="width: 100.0%; height: 100.0%;">Bergen Airport - Primary Catchment</div>`)[0];
+            popup_44ae2129e6e6569424a9321e4d172786.setContent(html_77fe9f60a5a92769cd6a3785bfaacc7c);
+        
+
+        circle_9a251c139872f92fc97ce2de88477198.bindPopup(popup_44ae2129e6e6569424a9321e4d172786)
+        ;
+
+        
+    
+    
+            var circle_486c3594c4a3b172be9aff9c76f19f0f = L.circle(
+                [5.2181, 60.2936],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.3, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 90000, "stroke": true, "weight": 3}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+        var popup_3a91049614dbf398c11f4a502dfd9b3b = L.popup({"maxWidth": "100%"});
+
+        
+            var html_8c07f556f91a3bd8abd91da8ec7857be = $(`<div id="html_8c07f556f91a3bd8abd91da8ec7857be" style="width: 100.0%; height: 100.0%;">Bergen Airport - Secondary Catchment</div>`)[0];
+            popup_3a91049614dbf398c11f4a502dfd9b3b.setContent(html_8c07f556f91a3bd8abd91da8ec7857be);
+        
+
+        circle_486c3594c4a3b172be9aff9c76f19f0f.bindPopup(popup_3a91049614dbf398c11f4a502dfd9b3b)
+        ;
+
+        
+    
+    
+            var marker_6f0afcc12504febed2a92901dad157d7 = L.marker(
+                [58.8766, 5.6378],
+                {}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+            var icon_9893696ab25743156fd330e276348c57 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_6f0afcc12504febed2a92901dad157d7.setIcon(icon_9893696ab25743156fd330e276348c57);
+        
+    
+        var popup_7767e51b2abc68eb764032a9cf154532 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_4586538b336ae05c4031b4437a411bc6 = $(`<div id="html_4586538b336ae05c4031b4437a411bc6" style="width: 100.0%; height: 100.0%;">Stavanger Airport</div>`)[0];
+            popup_7767e51b2abc68eb764032a9cf154532.setContent(html_4586538b336ae05c4031b4437a411bc6);
+        
+
+        marker_6f0afcc12504febed2a92901dad157d7.bindPopup(popup_7767e51b2abc68eb764032a9cf154532)
+        ;
+
+        
+    
+    
+            var marker_ebd11924cc5c8926f0fe8f9791bba9b3 = L.marker(
+                [59.345, 5.2084],
+                {}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+            var icon_85db698c7889a52ffd579bba45c4910b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_ebd11924cc5c8926f0fe8f9791bba9b3.setIcon(icon_85db698c7889a52ffd579bba45c4910b);
+        
+    
+        var popup_b7846c29bb5820e62bfd3092ad8eb83f = L.popup({"maxWidth": "100%"});
+
+        
+            var html_66e50c52b1ce1eb16cf9b38a4667cb8c = $(`<div id="html_66e50c52b1ce1eb16cf9b38a4667cb8c" style="width: 100.0%; height: 100.0%;">Haugesund Airport</div>`)[0];
+            popup_b7846c29bb5820e62bfd3092ad8eb83f.setContent(html_66e50c52b1ce1eb16cf9b38a4667cb8c);
+        
+
+        marker_ebd11924cc5c8926f0fe8f9791bba9b3.bindPopup(popup_b7846c29bb5820e62bfd3092ad8eb83f)
+        ;
+
+        
+    
+    
+            var marker_61c9a814bee1087d0a819de981169946 = L.marker(
+                [59.7919, 5.3409],
+                {}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+            var icon_55d83e81003cbca1e4e99b3b32c195ce = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_61c9a814bee1087d0a819de981169946.setIcon(icon_55d83e81003cbca1e4e99b3b32c195ce);
+        
+    
+        var popup_ab6a301e02cf456e8b352cbd2b5e781d = L.popup({"maxWidth": "100%"});
+
+        
+            var html_26d5afe3101d7519c44595c86c28cae7 = $(`<div id="html_26d5afe3101d7519c44595c86c28cae7" style="width: 100.0%; height: 100.0%;">Stord Airport</div>`)[0];
+            popup_ab6a301e02cf456e8b352cbd2b5e781d.setContent(html_26d5afe3101d7519c44595c86c28cae7);
+        
+
+        marker_61c9a814bee1087d0a819de981169946.bindPopup(popup_ab6a301e02cf456e8b352cbd2b5e781d)
+        ;
+
+        
+    
+    
+            var marker_fa93a91b67e01071132da051ab0b57cb = L.marker(
+                [60.2936, 5.2181],
+                {}
+            ).addTo(map_c6afa395be1fab932866689dd5169ac5);
+        
+    
+            var icon_3f8373d0232b759b0a47d367125f8c2d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_fa93a91b67e01071132da051ab0b57cb.setIcon(icon_3f8373d0232b759b0a47d367125f8c2d);
+        
+    
+        var popup_1dd13cb357ce01dd5a08f15a4eb778f0 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_7f4dbf4f07088642e3e3ce9464554eb0 = $(`<div id="html_7f4dbf4f07088642e3e3ce9464554eb0" style="width: 100.0%; height: 100.0%;">Bergen Airport</div>`)[0];
+            popup_1dd13cb357ce01dd5a08f15a4eb778f0.setContent(html_7f4dbf4f07088642e3e3ce9464554eb0);
+        
+
+        marker_fa93a91b67e01071132da051ab0b57cb.bindPopup(popup_1dd13cb357ce01dd5a08f15a4eb778f0)
+        ;
+
+        
+    
+</script>
+</html>
