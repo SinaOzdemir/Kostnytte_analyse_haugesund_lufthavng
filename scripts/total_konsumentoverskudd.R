@@ -1,84 +1,107 @@
-# totalt konsument overskudd
+##################################
+#Title: totalt konsumentoverskudd#
+#Author: Sina Ozdemir, PhD       #
+#        Samfunnsanalytiker      #
+#        Karmøy Kommune          #
+#Kontakt: sioz@karmoy.kommune.no #
+#Dato: 20/12/2024                #
+##################################
 
 
 # setup -------------------------------------------------------------------
 
 library(pacman)
 
-p_load(char = c("tidyverse","here","openxlsx"))
+p_load(char = c("tidyverse","openxlsx","here"))
 
 
 # data --------------------------------------------------------------------
 
-passajerer_2023 <- read.xlsx(xlsxFile = here("data","haugesund_lufthavn_passajerer_data_2023.xlsx")) %>% 
-  select(Radetiketter,Innland,Utland,Totalsum) 
+penger_besparelse<- read.xlsx(here("data","pengerkostnadsbesparelse.xlsx"),sheet = 1) 
 
 
-lufthavn_passajerer_koef<- c("yrke" = .7,"ferie" = .3)
-
-reisevane_passajerer_koef<- c("yrke_innland" = .41,"ferie_innland" = .59,"yrke_utland"=.24,"ferie_utland"=.76)
-
-andel_monad<- passajerer_2023 %>% 
-  filter(Radetiketter != "Totalsum") %>% 
-  mutate(innland_andel_per_monad = round(Innland/sum(Innland),2),
-         utland_andel_per_monad = round(Utland/sum(Utland),2),
-         total_andel_per_monad = round(Totalsum/sum(Totalsum),2))
+tidsbesparelse_verdi<- read.xlsx(here("data","tidsbesparelseverdi_lufthavn_scenario.xlsx"),sheet= 1) 
 
 
-## andel monad is wrong
+eksternK_besparelse<- read.xlsx(here("data","overskudd data","ekstern_kostnad_besparelse.xlsx"),sheet = 1)
 
-gjennomsnitt_besparelse<- read.xlsx(here("results","all_overskudd.xlsx")) %>% 
-  group_by(rute,scenario) %>% 
-  summarise(across(bil.yrke_driver_overskudd:kollektiv.ferie_overskudd,~mean(.x))) %>% 
-  ungroup() %>% 
-  pivot_longer(cols = bil.yrke_driver_overskudd:kollektiv.ferie_overskudd,names_to = "mode",values_to = "overskudd") %>% 
-  mutate(hensikt = case_when(grepl(x=mode,pattern = "yrke")~"yrke",
-                             grepl(x=mode,pattern="ferie")~"ferie",.default = "error")) %>% 
-  group_by(rute,scenario,hensikt) %>% 
-  summarise(overskudd = mean(overskudd)) %>% 
-  ungroup() %>% 
-  pivot_wider(id_cols = c(hensikt,scenario),names_from = rute,values_from = overskudd)
-  
+# total konsumentoverskudd per konsument ----------------------------------
+###kollektiv overskudd
 
-# total overskudd ---------------------------------------------------------
+###anta at kollektiv prisene ikke skal forandre seg med alternativer
+
+rogfast_kollektiv_pris<- penger_besparelse %>% 
+  filter(reisemidler == "kollektiv") %>% 
+  mutate(scenario = "rogfast")
 
 
-lufthavn_passajerer_segment<- data.frame(antall = round(621302*lufthavn_passajerer_koef)) %>% 
-  rownames_to_column(var = "hensikt") 
-
-gjennomsnittlig_overskudd <- gjennomsnitt_besparelse %>% 
-  left_join(.,lufthavn_passajerer_segment,by = "hensikt") %>% 
-  mutate(hlh_flesland_overskudd = hlh_flesland*antall,
-         hlh_sola_overskudd = hlh_sola*antall,
-         hlh_stord_overskudd = hlh_stord*antall) %>% 
-  mutate(across(hlh_flesland_overskudd:hlh_stord_overskudd,~round(.x))) %>% 
-  mutate(source = "lufthavndriftAS")
-
-reisevane_segmenter<- passajerer_2023 %>% 
-  filter(Radetiketter == "Totalsum") %>% 
-  mutate(innland_yrke = Innland*reisevane_passajerer_koef[["yrke_innland"]],
-         innland_ferie = Innland*reisevane_passajerer_koef[["ferie_innland"]],
-         utland_yrke = Utland*reisevane_passajerer_koef[["yrke_utland"]],
-         utland_ferie = Utland*reisevane_passajerer_koef[["ferie_utland"]]) %>% 
-  pivot_longer(cols = innland_yrke:utland_ferie,names_to = "type",values_to = "antall") %>% 
-  mutate(hensikt = str_split_i(type,"_",i=2)) %>% 
-  group_by(hensikt) %>% 
-  summarise(antall = sum(antall)) %>% 
-  ungroup() 
+ferjefri_nord_kollektiv_pris<- penger_besparelse %>% 
+  filter(reisemidler == "kollektiv") %>% 
+  mutate(scenario = "ferjefri_nord")
 
 
-gjennomsnittlig_overskudd2<-gjennomsnitt_besparelse %>% 
-  left_join(.,reisevane_segmenter,by = "hensikt") %>% 
-  mutate(hlh_flesland_overskudd = hlh_flesland*antall,
-         hlh_sola_overskudd = hlh_sola*antall,
-         hlh_stord_overskudd = hlh_stord*antall) %>% 
-  mutate(across(hlh_flesland_overskudd:hlh_stord_overskudd,~round(.x))) %>% 
-  mutate(source = "ReisevaneSU")
+ferjefri_alt_kollektiv_pris<- penger_besparelse %>% 
+  filter(reisemidler == "kollektiv") %>% 
+  mutate(scenario = "ferjefri_alt")
 
-total_overskudd<- rbind(gjennomsnittlig_overskudd,gjennomsnittlig_overskudd2) %>% 
-  mutate(total_overskudd = (hlh_flesland_overskudd+hlh_sola_overskudd+hlh_stord_overskudd)) %>% 
-  mutate(total_overskud_mill_kr = total_overskudd/10^6)
+nullalt_kollektiv_pris<- penger_besparelse %>% 
+  filter(reisemidler == "kollektiv")
 
-if(!file.exists(here("results","total_overskudd_detaljert.xlsx"))){
-  write.xlsx(total_overskudd,here("results","total_overskudd_detaljert.xlsx"))
+kollektiv_penger<- rbind(nullalt_kollektiv_pris,rogfast_kollektiv_pris,ferjefri_nord_kollektiv_pris,ferjefri_alt_kollektiv_pris) %>% 
+  rename(kollektiv_pris = pris) %>% 
+  mutate(rute = tolower(rute))
+
+kollektiv_tids_penger<- tidsbesparelse_verdi %>% select(Kommune,rute,scenario,contains("kollektiv"),-contains("tidsbesparelse")) %>%
+  left_join(.,kollektiv_penger,by = c("Kommune","rute","scenario")) %>%
+  mutate(yrke_overskudd = yrke.kollektiv+kollektiv_pris,
+         ferie_overskudd = ferie.kollektiv+kollektiv_pris) %>%
+  select(-contains("kollektiv"),-reisemidler) %>%
+  rename(kollektiv.yrke_overskudd = yrke_overskudd,
+         kollektiv.ferie_overskudd = ferie_overskudd)
+
+if(!file.exists(here("results","kollektiv_overskudd_per_reisende.xlsx"))){
+  write.xlsx(kollektiv_tids_penger,here("results","kollektiv_overskudd_per_reisende.xslx"))
+}
+
+### bil overskudd
+
+#anta at pengekostnad skall ikke endre med alternativer
+
+car_penger_besparelse = penger_besparelse %>% 
+  filter(reisemidler == "bil") %>% 
+  mutate(scenario = case_when(scenario=="ferjefrie39_nord" ~"ferjefri_nord",
+                              scenario == "ferjefrie39_alt"~"ferjefri_alt",.default=scenario))
+
+car_besparelse = tidsbesparelse_verdi %>% 
+  select(Kommune,rute,scenario,contains("bil")) %>% 
+  left_join(.,car_penger_besparelse,by = c("Kommune","rute","scenario")) %>% 
+  mutate(bil.yrke_driver_overskudd = yrke.bil_sjofor+pris,
+         bil.yrke_passajerer_overskudd = yrke.bil_passajerer+pris,
+         bil.ferie_driver_overskudd = ferie.bil_sjofor + pris,
+         bil.ferie_passajerer_overskudd = ferie.bil_passajerer+pris) %>% 
+  select(Kommune,rute,scenario,contains("overskudd"))
+
+if(!file.exists(here("results","bil_overskudd_per_reisende.xlsx"))){
+  write.xlsx(car_besparelse,file = here("results","bil_overskudd_per_reisende.xlsx"))
+}
+
+
+# besparelse data ---------------------------------------------------------
+
+
+besparelser<- left_join(car_besparelse,kollektiv_tids_penger,by = c("Kommune","rute","scenario")) %>% 
+  left_join(.,eksternK_besparelse,by = c("Kommune","rute"))
+
+besparelse_alt<- besparelser %>% 
+  mutate(across(contains("bil."),~.x+eksternK.bil)) %>% 
+  mutate(across(contains("kollektiv."),~.x+eksternK.kollektiv))
+
+
+if(!file.exists(here("results","all_overskudd.xlsx"))){
+  write.xlsx(besparelse_alt,file = here("results","all_overskudd.xlsx"))
+}
+
+
+if(!file.exists(here("results","all_overskudd.RDS"))){
+  saveRDS(besparelse_alt,file = here("results","all_overskudd.RDS"))
 }

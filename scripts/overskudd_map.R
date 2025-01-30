@@ -6,15 +6,19 @@
 
 library(pacman)
 
-p_load(char = c("tidyverse","sf","ggthemes","geodata","here"))
+p_load(char = c("tidyverse","sf","ggthemes","geodata","here","rnaturalearth","rnaturalearthdata"))
 
-library(rnaturalearth)
-library(rnaturalearthdata)
-#devtools::install_github("rspatial/geodata") #server is down for the moment
 
-# fetch the base map ------------------------------------------------------
+# grunnkartet og overskudd data------------------------------------------------------
 
-# 
+overskudd<- readRDS(file = here("results","all_overskudd.RDS")) %>% 
+  mutate(Kommune = case_when(Kommune == "Tysvaer"~"Tysvær",.default = Kommune)) %>% 
+  mutate(rute = gsub("hlh","HAU",rute)) %>% 
+  mutate(bil.ferie = round((bil.ferie_driver_overskudd+bil.ferie_passajerer_overskudd)/2),
+         bil.yrke = round((bil.yrke_driver_overskudd+bil.yrke_passajerer_overskudd)/2)) %>% 
+  select(-contains("driver_overskudd"),-contains("passajerer_overskudd"))
+  
+
 # url <- "https://nedlasting.geonorge.no/geonorge/Basisdata/Kommuner/GeoJSON/Basisdata_0000_Norge_25833_Kommuner_GeoJSON.zip"
 # temp_file <- tempfile()
 # download.file(url, temp_file)
@@ -23,57 +27,25 @@ library(rnaturalearthdata)
 geojson_file <- list.files(here("data","auxilary data"), pattern = "\\.geojson$", full.names = TRUE)
 
 # Read the GeoJSON file into an sf object
-municipalities_gdf <- st_read(geojson_file,layer = "Kommune") %>% 
-
-
-# test --------------------------------------------------------------------
-
-
-municipalites_gdf_filtered<- municipalities_gdf %>%
-  filter(kommunenavn %in% c(unique(Adata$Kommune),"Tysvær")) %>% 
+municipalities_gdf <- st_read(geojson_file,layer = "Kommune")[,c("kommunenavn","geometry")] %>% 
+  filter(kommunenavn %in% unique(overskudd$Kommune)) %>% 
   rename(Kommune = kommunenavn)
 
-test_info<- savedata %>% 
-  mutate(Kommune = case_when(Kommune == "Tysvaer"~"Tysvær",.default = Kommune)) %>% 
-  group_by(Kommune) %>% 
-  summarise(bil.ferie = mean(bil.ferie)) %>% 
-  ungroup()
 
-
-test<- left_join(municipalites_gdf_filtered,test_info,by = "Kommune")
-
-test %>%  ggplot()+
-  geom_sf(aes(fill = bil.ferie),color = "black")+
-  geom_sf_label(aes(label = Kommune),color = "black")+
-  scale_fill_gradient2(low="green",mid = "yellow",high = "red")+
-  theme_minimal()+
-  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
-  labs(title = "Konsument overskudd med bil for ferie")
-
-
-# apply -------------------------------------------------------------------
+# null alternativ kart -------------------------------------------------------------------
 
 ## overskudd data
 
-Odata<-  readRDS(file = here("results","all_overskudd.RDS")) %>% 
-  mutate(bil.yrke = round((bil.yrke_driver_overskudd+bil.yrke_passajerer_overskudd)/2,0)) %>% 
-  mutate(bil.ferie = round((bil.ferie_driver_overskudd+bil.ferie_passajerer_overskudd)/2,0)) %>% 
-  select(-contains("driver"),-contains("passajerer")) %>% 
+null_alt<- overskudd %>% 
   filter(scenario == "nullalt") %>% 
   group_by(Kommune) %>% 
-  summarise(across(kollektiv.yrke_overskudd:bil.ferie,~mean(.x))) %>% 
-  mutate(Kommune = case_when(Kommune == "Tysvaer"~"Tysvær",.default = Kommune))
+  summarise(across(kollektiv.yrke_overskudd:bil.yrke,~round(mean(.x))))
 
-
-Pdata<- municipalities_gdf %>% 
-  rename(Kommune = kommunenavn) %>% 
-  filter(Kommune %in% unique(Odata$Kommune)) %>% 
-  left_join(.,Odata,by = "Kommune")
-
+null_alt<- left_join(municipalities_gdf,null_alt,by = "Kommune")
 
 ## Yrke reise_med kollektiv
 
-Pdata %>% ggplot()+
+null_alt %>% ggplot()+
   geom_sf(aes(fill = kollektiv.yrke_overskudd),color = "black")+
   geom_sf_label(aes(label = Kommune),color = "black")+
   scale_fill_viridis_c(option = "inferno")+
@@ -85,7 +57,7 @@ Pdata %>% ggplot()+
 
 ## Yrke reise med bil
 
-Pdata %>% ggplot()+
+null_alt %>% ggplot()+
   geom_sf(aes(fill = bil.yrke),color = "black")+
   geom_sf_label(aes(label = Kommune),color = "black")+
   scale_fill_viridis_c(option = "inferno")+
@@ -97,7 +69,7 @@ Pdata %>% ggplot()+
 
 ## ferie reise med kollektiv
 
-Pdata %>% ggplot()+
+null_alt %>% ggplot()+
   geom_sf(aes(fill = kollektiv.ferie_overskudd),color = "black")+
   geom_sf_label(aes(label = Kommune),color = "black")+
   scale_fill_viridis_c(option = "inferno")+
@@ -110,7 +82,7 @@ Pdata %>% ggplot()+
 ## ferie reise med bil
 
 
-Pdata %>% ggplot()+
+null_alt %>% ggplot()+
   geom_sf(aes(fill = bil.ferie),color = "black")+
   geom_sf_label(aes(label = Kommune),color = "black")+
   scale_fill_viridis_c(option = "inferno")+
@@ -122,67 +94,113 @@ Pdata %>% ggplot()+
 
 # scenarioer --------------------------------------------------------------
 
-### test med null alt
-Edata<- Odata %>% 
-  filter(scenario == "nullalt") %>% 
-  pivot_longer(bil.yrke_driver_overskudd:kollektiv.ferie_overskudd,names_to = "indikator",values_to = "besparelse") %>% 
-  group_by(Kommune,indikator) %>% 
-  summarise(besparelse = round(mean(besparelse),0)) %>% 
-  mutate(Kommune = case_when(Kommune == "Tysvaer" ~ "Tysvær",.default = Kommune)) %>% 
-  ungroup()
+###Rogfast
 
-municipalities<- unique(Edata$Kommune)
+rogfast<- overskudd %>% 
+  filter(scenario == "rogfast") %>% 
+  group_by(Kommune) %>% 
+  summarise(across(kollektiv.yrke_overskudd:bil.yrke,~round(mean(.x))))
 
-gdf_filtered<- municipalities_gdf %>% 
-  filter(kommunenavn %in%municipalities) %>% 
-  select(kommunenavn,geometry) %>% 
-  rename(Kommune = kommunenavn)
+rogfast<- left_join(municipalities_gdf,rogfast,by = "Kommune")
 
+#### yrke - bil
 
-Mdata<- gdf_filtered %>% 
-  left_join(.,Edata,by = "Kommune")
-
-
-Mdata %>% ggplot()+
-  geom_sf(aes(geometry = geometry,fill = besparelse),color = "black")+
+rogfast %>% ggplot()+
+  geom_sf(aes(fill = bil.yrke),color = "black")+
   geom_sf_label(aes(label = Kommune),color = "black")+
-  scale_fill_continuous(type = "viridis")+
+  scale_fill_viridis_c(option = "inferno")+
   theme_minimal()+
-  theme(legend.position = "bottom")+
-  labs(title = "Konsument overskudd for feriereise med bil")+
-  guides(fill = guide_legend(title = ""))+
-  facet_wrap(~indikator)
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
+  labs(title = "Rogfast: yrkesreise med bil")+
+  guides(fill = guide_legend(title = ""))
 
 
-###scenarioer
-#TODO: need to fix it, plots look shit
-scenario <- unique(Odata$scenario)
+#### yrke - kollektiv
 
-for (i in scenario) {
-  plot_info<- Odata %>% 
-    filter(scenario == i) %>% 
-    pivot_longer(bil.yrke_driver_overskudd:kollektiv.ferie_overskudd,names_to = "indikator",values_to = "besparelse") %>% 
-    group_by(Kommune,indikator) %>% 
-    summarise(besparelse = round(mean(besparelse),0)) %>% 
-    mutate(Kommune = case_when(Kommune == "Tysvaer" ~ "Tysvær",.default = Kommune)) %>% 
-    ungroup()
-  
-  plot_data<-gdf_filtered %>% 
-    left_join(.,plot_info,by = "Kommune")
-  
-  plot<- plot_data %>% ggplot()+
-    geom_sf(aes(geometry = geometry,fill = besparelse),color = "black")+
-    geom_sf_label(aes(label = Kommune),color = "black")+
-    scale_fill_continuous(type = "viridis")+
-    theme_minimal()+
-    theme(legend.position = "bottom")+
-    labs(title = paste0("scenario: ", i))+
-    guides(fill = guide_legend(title = ""))+
-    facet_wrap(~indikator)
-  
-  if(!dir.exists(here("graphs","scenario_graphs",i))){
-    dir.create(here("graphs","scenario_graphs",i))
-  }
-  
-  ggsave(filename = here("graphs","scenario_graphs",i,paste0(i,".png")),plot = plot,width = 1290,height = 707,units = "px")
-}
+rogfast %>% ggplot()+
+  geom_sf(aes(fill = kollektiv.yrke_overskudd),color = "black")+
+  geom_sf_label(aes(label = Kommune),color = "black")+
+  scale_fill_viridis_c(option = "inferno")+
+  theme_minimal()+
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
+  labs(title = "Rogfast: yrkesreise med kollektiv")+
+  guides(fill = guide_legend(title = ""))
+
+
+#### ferie - bil
+
+rogfast %>% ggplot()+
+  geom_sf(aes(fill = bil.ferie),color = "black")+
+  geom_sf_label(aes(label = Kommune),color = "black")+
+  scale_fill_viridis_c(option = "inferno")+
+  theme_minimal()+
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
+  labs(title = "Rogfast: ferie reise med bil")+
+  guides(fill = guide_legend(title = ""))
+
+
+#### ferie - kollektiv
+
+rogfast %>% ggplot()+
+  geom_sf(aes(fill = kollektiv.ferie_overskudd),color = "black")+
+  geom_sf_label(aes(label = Kommune),color = "black")+
+  scale_fill_viridis_c(option = "inferno")+
+  theme_minimal()+
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
+  labs(title = "Rogfast: ferie reise med kollektiv")+
+  guides(fill = guide_legend(title = ""))
+
+
+
+# ferje fri E39 - nord ----------------------------------------------------
+
+
+ff_nord<-overskudd %>% 
+  filter(scenario == "ferjefri_nord") %>% 
+  group_by(Kommune) %>% 
+  summarise(across(kollektiv.yrke_overskudd:bil.yrke,~round(mean(.x)))) %>% 
+  pivot_longer(kollektiv.yrke_overskudd:bil.yrke,names_to = "reisemidler", values_to = "overskudd") %>% 
+  mutate(reisemidler = case_when(reisemidler == "kollektiv.yrke_overskudd" ~"Yrkesreise - kollektiv",
+                                 reisemidler == "kollektiv.ferie_overskudd" ~"Ferie - kollektiv",
+                                 reisemidler == "bil.ferie"~ "Ferie - bil",
+                                 reisemidler == "bil.yrke" ~ "Yrkesreise - bil",.default = reisemidler))
+
+ff_nord<- left_join(municipalities_gdf,ff_nord, by = "Kommune")
+
+ff_nord %>%  ggplot()+
+  geom_sf(aes(fill = overskudd),color = "black")+
+  geom_sf_label(aes(label = Kommune),color = "black")+
+  scale_fill_viridis_c(option = "inferno")+
+  theme_minimal()+
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
+  facet_wrap(~reisemidler)+
+  labs(title = "Ferje fri E39 - Nordre del")+
+  guides(fill = guide_legend(title = ""))
+
+
+# ferje fri e39 alt -------------------------------------------------------
+
+
+
+
+ff_alt<-overskudd %>% 
+  filter(scenario == "ferjefri_alt") %>% 
+  group_by(Kommune) %>% 
+  summarise(across(kollektiv.yrke_overskudd:bil.yrke,~round(mean(.x)))) %>% 
+  pivot_longer(kollektiv.yrke_overskudd:bil.yrke,names_to = "reisemidler", values_to = "overskudd") %>% 
+  mutate(reisemidler = case_when(reisemidler == "kollektiv.yrke_overskudd" ~"Yrkesreise - kollektiv",
+                                 reisemidler == "kollektiv.ferie_overskudd" ~"Ferie - kollektiv",
+                                 reisemidler == "bil.ferie"~ "Ferie - bil",
+                                 reisemidler == "bil.yrke" ~ "Yrkesreise - bil",.default = reisemidler))
+
+ff_alt<- left_join(municipalities_gdf,ff_alt, by = "Kommune")
+
+ff_alt %>%  ggplot()+
+  geom_sf(aes(fill = overskudd),color = "black")+
+  geom_sf_label(aes(label = Kommune),color = "black")+
+  scale_fill_viridis_c(option = "inferno")+
+  theme_minimal()+
+  theme(axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.x = element_blank(),axis.text.y = element_blank())+
+  facet_wrap(~reisemidler)+
+  labs(title = "Ferje fri E39 - Hele veien")+
+  guides(fill = guide_legend(title = ""))
